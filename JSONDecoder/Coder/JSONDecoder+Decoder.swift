@@ -14,13 +14,13 @@ final class _JSONDecoder: Decoder {
 
     var userInfo: [CodingUserInfoKey : Any]
 
-    var container: JSONObject
+    var object: JSONObject
 
-    var currentContainer: JSONObject?
+    var currentObject: JSONObject?
 
-    init(referencing container: JSONObject, at codingPath: [CodingKey] = []) {
+    init(referencing object: JSONObject, at codingPath: [CodingKey] = []) {
         self.codingPath = codingPath
-        self.container = container
+        self.object = object
         self.userInfo = [:]
     }
 }
@@ -32,7 +32,7 @@ final class _JSONDecoder: Decoder {
 extension _JSONDecoder {
 
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        return try container(keyedBy: type, wrapping: currentContainer ?? container)
+        return try container(keyedBy: type, wrapping: currentObject ?? object)
     }
 
     func container<Key>(keyedBy type: Key.Type, wrapping object: JSONObject) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -49,7 +49,7 @@ extension _JSONDecoder {
     }
 
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        return try unkeyedContainer(wrapping: currentContainer ?? container)
+        return try unkeyedContainer(wrapping: currentObject ?? object)
     }
 
     func unkeyedContainer(wrapping object: JSONObject) throws -> UnkeyedDecodingContainer {
@@ -73,7 +73,7 @@ extension _JSONDecoder {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
-        return _JSONDecoder(referencing: currentContainer ?? container, at: codingPath)
+        return _JSONDecoder(referencing: currentObject ?? object, at: codingPath)
     }
 
     func superDecoder() throws -> Decoder {
@@ -252,7 +252,7 @@ extension _JSONDecoder {
     }
 
     func unboxDecodable<T>(_ object: JSONObject) throws -> T where T: Decodable {
-        currentContainer = object
+        currentObject = object
 
         return try T.init(from: self)
     }

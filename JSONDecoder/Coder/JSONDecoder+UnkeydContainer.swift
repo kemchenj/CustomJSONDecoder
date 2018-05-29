@@ -16,20 +16,20 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     }
 
     var count: Int? {
-        return container.count
+        return objectSequence.count
     }
     
     var isAtEnd: Bool {
-        return container.count == currentIndex + 1
+        return currentIndex >= objectSequence.count
     }
     
     var currentIndex: Int
 
     private unowned let decoder: _JSONDecoder
-    private let container: [JSONObject]
+    private let objectSequence: [JSONObject]
 
     init(referencing decoder: _JSONDecoder, wrapping container: [JSONObject]) {
-        self.container = container
+        self.objectSequence = container
         self.decoder = decoder
         self.currentIndex = 0
     }
@@ -50,7 +50,7 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
 
         defer { currentIndex += 1 }
 
-        return container[currentIndex]
+        return objectSequence[currentIndex]
     }
 
     mutating func decodeNil() throws -> Bool {
