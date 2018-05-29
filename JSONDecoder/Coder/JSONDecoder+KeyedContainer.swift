@@ -25,7 +25,7 @@ final class _KeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     var allKeys: [Key] {
-        return container.keys.flatMap(Key.init)
+        return container.keys.compactMap(Key.init)
     }
     
     func contains(_ key: Key) -> Bool {
