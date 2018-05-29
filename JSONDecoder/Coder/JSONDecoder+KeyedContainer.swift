@@ -35,7 +35,11 @@ final class _KeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
     @inline(__always)
     private func getObject(forKey key: Key) throws -> JSONObject {
         guard let object = container[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "No value associated with key \(key) (\"\(key.stringValue)\")."))
+            let context = DecodingError.Context(
+                codingPath: decoder.codingPath,
+                debugDescription: "No value associated with key \(key) (\"\(key.stringValue)\")."
+            )
+            throw DecodingError.keyNotFound(key, context)
         }
 
         return object

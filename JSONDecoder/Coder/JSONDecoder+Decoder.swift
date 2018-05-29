@@ -37,11 +37,14 @@ extension _JSONDecoder {
 
     func container<Key>(keyedBy type: Key.Type, wrapping object: JSONObject) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
         guard case let .object(unwrappedObject) = object else {
-            throw DecodingError._typeMismatch(at: codingPath, expectation: [String: JSONObject].self, reality: container)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: [String: JSONObject].self,
+                reality: object
+            )
         }
 
-        let keyedContainer = _KeyedContainer<Key>(referencing: self,
-                                                  wrapping: unwrappedObject)
+        let keyedContainer = _KeyedContainer<Key>(referencing: self, wrapping: unwrappedObject)
         return KeyedDecodingContainer(keyedContainer)
     }
 
@@ -51,7 +54,11 @@ extension _JSONDecoder {
 
     func unkeyedContainer(wrapping object: JSONObject) throws -> UnkeyedDecodingContainer {
         guard case let .array(array) = object else {
-            throw DecodingError._typeMismatch(at: codingPath, expectation: [String: JSONObject].self, reality: object)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: [String: JSONObject].self,
+                reality: object
+            )
         }
 
         return _UnkeyedContainer(referencing: self, wrapping: array)
@@ -95,19 +102,31 @@ extension _JSONDecoder {
         switch object {
         case let .integer(number):
             guard let integer = T(exactly: number) else {
-                throw DecodingError._numberMisfit(at: codingPath, expectation: T.self, reality: number)
+                throw DecodingError._numberMisfit(
+                    at: codingPath,
+                    expectation: T.self,
+                    reality: number
+                )
             }
             return integer
         case let .double(number):
             switch T.self {
             case is Double.Type:
                 guard let double = Double.init(exactly: number) else {
-                    throw DecodingError._numberMisfit(at: codingPath, expectation: T.self, reality: number)
+                    throw DecodingError._numberMisfit(
+                        at: codingPath,
+                        expectation: T.self,
+                        reality: number
+                    )
                 }
                 return double as! T
             case is Float.Type:
                 guard let float = Float(exactly: number) else {
-                    throw DecodingError._numberMisfit(at: codingPath, expectation: T.self, reality: number)
+                    throw DecodingError._numberMisfit(
+                        at: codingPath,
+                        expectation: T.self,
+                        reality: number
+                    )
                 }
                 return float as! T
             default:
@@ -119,7 +138,11 @@ extension _JSONDecoder {
             guard let number = T(string) else { fallthrough }
             return number
         default:
-            throw DecodingError._typeMismatch(at: codingPath, expectation: T.self, reality: object)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: T.self,
+                reality: object
+            )
         }
     }
 
@@ -134,19 +157,31 @@ extension _JSONDecoder {
         switch object {
         case let .integer(number):
             guard let integer = T(exactly: number) else {
-                throw DecodingError._numberMisfit(at: codingPath, expectation: T.self, reality: number)
+                throw DecodingError._numberMisfit(
+                    at: codingPath,
+                    expectation: T.self,
+                    reality: number
+                )
             }
             return integer
         case let .double(number):
             guard let double = T(exactly: number) else {
-                throw DecodingError._numberMisfit(at: codingPath, expectation: T.self, reality: number)
+                throw DecodingError._numberMisfit(
+                    at: codingPath,
+                    expectation: T.self,
+                    reality: number
+                )
             }
             return double
         case let .string(string):
             guard let number = T(string) else { fallthrough }
             return number
         default:
-            throw DecodingError._typeMismatch(at: codingPath, expectation: T.self, reality: object)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: T.self,
+                reality: object
+            )
         }
     }
 
@@ -159,7 +194,11 @@ extension _JSONDecoder {
 
     func unbox(_ object: JSONObject) throws -> Bool {
         func throwError() throws -> Never {
-            throw DecodingError._typeMismatch(at: codingPath, expectation: Bool.self, reality: object)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: Bool.self,
+                reality: object
+            )
         }
 
         switch object {
@@ -197,7 +236,11 @@ extension _JSONDecoder {
         case .bool, .double, .integer, .string:
             return object.description
         case .array, .object, .null:
-            throw DecodingError._typeMismatch(at: codingPath, expectation: String.self, reality: object)
+            throw DecodingError._typeMismatch(
+                at: codingPath,
+                expectation: String.self,
+                reality: object
+            )
         }
     }
 

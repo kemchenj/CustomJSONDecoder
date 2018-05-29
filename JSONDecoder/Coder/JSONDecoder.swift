@@ -17,7 +17,11 @@ public final class CustomDecoder {
         do {
             rootObject = try JSONParser.parse(data)
         } catch {
-            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON", underlyingError: error))
+            throw DecodingError.dataCorrupted(DecodingError.Context(
+                codingPath: [],
+                debugDescription: "The given data was not valid JSON",
+                underlyingError: error
+            ))
         }
 
         let decoder = _JSONDecoder(referencing: rootObject)
