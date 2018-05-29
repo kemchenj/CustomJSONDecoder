@@ -10,7 +10,10 @@ import Foundation
 
 struct _UnkeyedContainer: UnkeyedDecodingContainer {
 
-    var codingPath: [CodingKey]
+    var codingPath: [CodingKey] {
+        get { return decoder.codingPath }
+        set { decoder.codingPath = newValue }
+    }
 
     var count: Int? {
         return container.count
@@ -28,7 +31,6 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     init(referencing decoder: _JSONDecoder, wrapping container: [JSONObject]) {
         self.container = container
         self.decoder = decoder
-        self.codingPath = decoder.codingPath
         self.currentIndex = 0
     }
 

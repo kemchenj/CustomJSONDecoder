@@ -14,12 +14,14 @@ final class _KeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
     
     private let container: [String: JSONObject]
     
-    private(set) var codingPath: [CodingKey] = []
+    var codingPath: [CodingKey] {
+        get { return decoder.codingPath }
+        set { decoder.codingPath = newValue }
+    }
     
     init(referencing decoder: _JSONDecoder, wrapping container: [String: JSONObject]) {
         self.decoder    = decoder
         self.container  = container
-        self.codingPath = decoder.codingPath
     }
     
     var allKeys: [Key] {
