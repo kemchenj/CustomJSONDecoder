@@ -22,12 +22,10 @@ final class JSONParser {
         
         public static let omitNulls      = Option(rawValue: 0b0001)
         public static let allowFragments = Option(rawValue: 0b0010)
-        public static let allowComments  = Option(rawValue: 0b0100)
     }
     
     private let omitNulls: Bool
-    private let allowComments: Bool
-    
+
     private var pointer: UnsafePointer<UTF8.CodeUnit>
     private var buffer: UnsafeBufferPointer<UTF8.CodeUnit>
     
@@ -41,7 +39,6 @@ final class JSONParser {
         self.buffer = bufferPointers
         self.pointer = pointer
         self.omitNulls = options.contains(.omitNulls)
-        self.allowComments = options.contains(.allowComments)
     }
 }
 
@@ -103,8 +100,6 @@ private extension JSONParser {
     func pop() -> UTF8.CodeUnit {
         assert(pointer != buffer.endAddress)
         defer { pointer = pointer.advanced(by: 1) }
-//        print(pointer.pointee)
-//        print(UnicodeScalar.init(pointer.pointee))
         return pointer.pointee
     }
     
@@ -144,9 +139,6 @@ private extension JSONParser {
             pop()
             try assertFollowedBy(ull)
             return .null
-        case slash where allowComments:
-            try skipWhitespace()
-            return try parseValue()
         default:
             throw Error.Reason.invalidSyntax
         }
@@ -526,11 +518,6 @@ private extension JSONParser {
         
         while pointer != buffer.endAddress && pointer.pointee.isWhiteSpace {
             pop()
-        }
-        
-        if allowComments {
-            let wasComment = try skipComments()
-            if wasComment { try skipWhitespace() }
         }
     }
 }
