@@ -42,7 +42,7 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
             throw DecodingError.valueNotFound(JSONObject.self, DecodingError.Context(codingPath: decoder.codingPath + [currentKey], debugDescription: "Unkeyed container is at end."))
         }
 
-        currentIndex += 1
+        defer { currentIndex += 1 }
 
         return container[currentIndex]
     }
