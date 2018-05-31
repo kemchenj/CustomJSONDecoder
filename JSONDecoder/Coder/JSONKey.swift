@@ -8,8 +8,8 @@
 
 struct JSONKey : CodingKey {
 
-    public var stringValue: String
-    public var intValue: Int?
+    var stringValue: String
+    var intValue: Int?
 
     init?(stringValue: String) {
         self.stringValue = stringValue
