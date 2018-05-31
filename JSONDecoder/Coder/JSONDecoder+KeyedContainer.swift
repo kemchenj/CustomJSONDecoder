@@ -36,7 +36,7 @@ final class _KeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
     private func getObject(forKey key: Key) throws -> JSONObject {
         guard let object = object[key.stringValue] else {
             let context = DecodingError.Context(
-                codingPath: decoder.codingPath,
+                codingPath: codingPath,
                 debugDescription: "No value associated with key \(key) (\"\(key.stringValue)\")."
             )
             throw DecodingError.keyNotFound(key, context)
@@ -120,8 +120,8 @@ extension _KeyedContainer {
 extension _KeyedContainer {
 
     private func _superDecoder(forKey key: CodingKey) throws -> Decoder {
-        decoder.codingPath.append(key)
-        defer { self.decoder.codingPath.removeLast() }
+        codingPath.append(key)
+        defer { codingPath.removeLast() }
 
         let value = (key is JSONKey) == true
             ? JSONObject.object(object)
@@ -132,8 +132,8 @@ extension _KeyedContainer {
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
         let object = try getObject(forKey: key)
 
-        decoder.codingPath.append(key)
-        defer { decoder.codingPath.removeLast() }
+        codingPath.append(key)
+        defer { codingPath.removeLast() }
 
         return try decoder.container(keyedBy: type, wrapping: object)
     }
@@ -141,8 +141,8 @@ extension _KeyedContainer {
     func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
         let object = try getObject(forKey: key)
 
-        decoder.codingPath.append(key)
-        defer { decoder.codingPath.removeLast() }
+        codingPath.append(key)
+        defer { codingPath.removeLast() }
 
         return try decoder.unkeyedContainer(wrapping: object)
     }
