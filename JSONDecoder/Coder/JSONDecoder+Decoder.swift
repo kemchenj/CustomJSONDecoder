@@ -16,7 +16,7 @@ final class _JSONDecoder: Decoder {
 
     var object: JSON
 
-    var currentObject: JSON!
+    var currentObject: JSON
 
     init(referencing object: JSON, at codingPath: [CodingKey] = []) {
         self.codingPath = codingPath
