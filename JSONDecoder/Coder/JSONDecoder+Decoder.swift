@@ -33,7 +33,15 @@ final class _JSONDecoder: Decoder {
 extension _JSONDecoder {
 
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        return try container(keyedBy: type, wrapping: currentObject ?? object)
+        return try container(keyedBy: type, wrapping: currentObject)
+    }
+
+    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+        return try unkeyedContainer(wrapping: currentObject)
+    }
+
+    func singleValueContainer() throws -> SingleValueDecodingContainer {
+        return _SingleValueDecodingContainer(referencing: self, wrapping: currentObject)
     }
 
     func container<Key>(keyedBy type: Key.Type, wrapping object: JSON) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -46,10 +54,6 @@ extension _JSONDecoder {
 
         let keyedContainer = _KeyedContainer<Key>(referencing: self, wrapping: unwrappedObject)
         return KeyedDecodingContainer(keyedContainer)
-    }
-
-    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        return try unkeyedContainer(wrapping: currentObject ?? object)
     }
 
     func unkeyedContainer(wrapping object: JSON) throws -> UnkeyedDecodingContainer {
