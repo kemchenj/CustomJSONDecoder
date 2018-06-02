@@ -16,12 +16,13 @@ final class _JSONDecoder: Decoder {
 
     var object: JSONObject
 
-    var currentObject: JSONObject?
+    var currentObject: JSONObject!
 
     init(referencing object: JSONObject, at codingPath: [CodingKey] = []) {
         self.codingPath = codingPath
         self.object = object
         self.userInfo = [:]
+        self.currentObject = object
     }
 }
 
@@ -65,7 +66,7 @@ extension _JSONDecoder {
     }
 
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        return self
+        return _SingleValueDecodingContainer(referencing: self, wrapping: currentObject)
     }
 
     @inline(__always)
