@@ -52,6 +52,9 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
 
         return sequence[currentIndex]
     }
+}
+
+extension _UnkeyedContainer {
 
     mutating func decodeNil() throws -> Bool {
         return try decoder.unboxNil(getCurrentObject(), forKey: currentKey)
@@ -116,6 +119,9 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
         return try decoder.unboxDecodable(getCurrentObject(), forKey: currentKey)
     }
+}
+
+extension _UnkeyedContainer {
 
     mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
         return try decoder.container(keyedBy: type, wrapping: getCurrentObject())
