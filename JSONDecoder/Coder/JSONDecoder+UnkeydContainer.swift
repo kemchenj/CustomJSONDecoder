@@ -130,6 +130,9 @@ extension _UnkeyedContainer {
     mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
         return try decoder.unkeyedContainer(wrapping: getCurrentObject())
     }
+}
+
+extension _UnkeyedContainer {
 
     mutating func superDecoder() throws -> Decoder {
         return _JSONDecoder(referencing: JSON.array(sequence), at: decoder.codingPath)

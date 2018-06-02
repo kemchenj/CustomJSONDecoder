@@ -113,11 +113,36 @@ extension _KeyedContainer {
     }
 }
 
-//
-// MARK: - [Decoding] Container
-//
+extension _KeyedContainer {
+
+    func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+        codingPath.append(key)
+        defer { codingPath.removeLast() }
+
+        let object = try getObject(forKey: key)
+
+        return try decoder.container(keyedBy: type, wrapping: object)
+    }
+
+    func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
+        codingPath.append(key)
+        defer { codingPath.removeLast() }
+
+        let object = try getObject(forKey: key)
+
+        return try decoder.unkeyedContainer(wrapping: object)
+    }
+}
 
 extension _KeyedContainer {
+
+    func superDecoder() throws -> Decoder {
+        return try _superDecoder(forKey: JSONKey.super)
+    }
+
+    func superDecoder(forKey key: K) throws -> Decoder {
+        return try _superDecoder(forKey: key)
+    }
 
     private func _superDecoder(forKey key: CodingKey) throws -> Decoder {
         codingPath.append(key)
@@ -127,31 +152,5 @@ extension _KeyedContainer {
             ? JSON.object(rootObject)
             : rootObject[key.stringValue, default: .null]
         return _JSONDecoder(referencing: value, at: decoder.codingPath)
-    }
-
-    func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-        let object = try getObject(forKey: key)
-
-        codingPath.append(key)
-        defer { codingPath.removeLast() }
-
-        return try decoder.container(keyedBy: type, wrapping: object)
-    }
-
-    func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
-        let object = try getObject(forKey: key)
-
-        codingPath.append(key)
-        defer { codingPath.removeLast() }
-
-        return try decoder.unkeyedContainer(wrapping: object)
-    }
-
-    func superDecoder() throws -> Decoder {
-        return try _superDecoder(forKey: JSONKey.super)
-    }
-
-    func superDecoder(forKey key: K) throws -> Decoder {
-        return try _superDecoder(forKey: key)
     }
 }
