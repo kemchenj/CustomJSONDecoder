@@ -124,6 +124,9 @@ extension _UnkeyedContainer {
 extension _UnkeyedContainer {
 
     mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+        codingPath.append(currentKey)
+        defer { codingPath.removeLast() }
+
         return try decoder.container(keyedBy: type, wrapping: getCurrentObject())
     }
 
