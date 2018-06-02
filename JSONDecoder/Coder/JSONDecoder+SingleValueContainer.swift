@@ -16,9 +16,9 @@ struct _SingleValueDecodingContainer: SingleValueDecodingContainer {
     }
 
     private unowned let decoder: _JSONDecoder
-    private let object: JSONObject
+    private let object: JSON
 
-    init(referencing decoder: _JSONDecoder, wrapping object: JSONObject) {
+    init(referencing decoder: _JSONDecoder, wrapping object: JSON) {
         self.object = object
         self.decoder = decoder
     }

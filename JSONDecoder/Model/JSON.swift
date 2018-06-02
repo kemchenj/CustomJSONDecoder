@@ -6,10 +6,10 @@
 //  Copyright © 2017 kemchenj. All rights reserved.
 //
 
-public enum JSONObject {
+public enum JSON {
     
-    indirect case array([JSONObject])
-    indirect case object([String: JSONObject])
+    indirect case array([JSON])
+    indirect case object([String: JSON])
     case null
     case bool(Bool)
     case string(String)
@@ -17,9 +17,9 @@ public enum JSONObject {
     case integer(Int64)
 }
 
-extension JSONObject: Equatable {
+extension JSON: Equatable {
     
-    public static func ==(lhs: JSONObject, rhs: JSONObject) -> Bool {
+    public static func ==(lhs: JSON, rhs: JSON) -> Bool {
         switch (lhs, rhs) {
         case let (.array(l)  , .array(r))   : return l == r
         case let (.object(l) , .object(r))  : return l == r
@@ -33,9 +33,9 @@ extension JSONObject: Equatable {
     }
 }
 
-extension JSONObject: Sequence {
+extension JSON: Sequence {
     
-    public func makeIterator() -> AnyIterator<JSONObject> {
+    public func makeIterator() -> AnyIterator<JSON> {
         switch self {
         case let .array(array):
             var iterator = array.makeIterator()
@@ -51,7 +51,7 @@ extension JSONObject: Sequence {
                 return .object([key: value])
             }
         default:
-            var value: JSONObject? = self
+            var value: JSON? = self
             
             return AnyIterator {
                 defer { value = nil }
@@ -62,7 +62,7 @@ extension JSONObject: Sequence {
     }
 }
 
-extension JSONObject: CustomStringConvertible {
+extension JSON: CustomStringConvertible {
     public var description: String {
         switch self {
         case let .array(array)      : return array.description

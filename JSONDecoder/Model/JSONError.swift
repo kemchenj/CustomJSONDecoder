@@ -6,11 +6,11 @@
 //  Copyright © 2017 kemchenj. All rights reserved.
 //
 
-extension JSONObject {
+extension JSON {
     
     enum Error: Swift.Error {
         case badFiled(String)
-        case badValue(JSONObject)
+        case badValue(JSON)
         case invalidNumber
     }
 }

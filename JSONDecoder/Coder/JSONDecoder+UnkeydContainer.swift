@@ -16,20 +16,20 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     }
 
     var count: Int? {
-        return objectSequence.count
+        return sequence.count
     }
     
     var isAtEnd: Bool {
-        return currentIndex >= objectSequence.count
+        return currentIndex >= sequence.count
     }
     
     var currentIndex: Int
 
     private unowned let decoder: _JSONDecoder
-    private let objectSequence: [JSONObject]
+    private let sequence: [JSON]
 
-    init(referencing decoder: _JSONDecoder, wrapping container: [JSONObject]) {
-        self.objectSequence = container
+    init(referencing decoder: _JSONDecoder, wrapping container: [JSON]) {
+        self.sequence = container
         self.decoder = decoder
         self.currentIndex = 0
     }
@@ -39,18 +39,18 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     }
 
     @inline(__always)
-    private mutating func getCurrentObject() throws -> JSONObject {
+    private mutating func getCurrentObject() throws -> JSON {
         guard !isAtEnd else {
             let context = DecodingError.Context(
                 codingPath: decoder.codingPath + [currentKey],
                 debugDescription: "Unkeyed container is at end."
             )
-            throw DecodingError.valueNotFound(JSONObject.self, context)
+            throw DecodingError.valueNotFound(JSON.self, context)
         }
 
         defer { currentIndex += 1 }
 
-        return objectSequence[currentIndex]
+        return sequence[currentIndex]
     }
 
     mutating func decodeNil() throws -> Bool {
@@ -126,7 +126,6 @@ struct _UnkeyedContainer: UnkeyedDecodingContainer {
     }
 
     mutating func superDecoder() throws -> Decoder {
-        return try _JSONDecoder(referencing: getCurrentObject(), at: decoder.codingPath)
+        return _JSONDecoder(referencing: JSON.array(sequence), at: decoder.codingPath)
     }
-
 }

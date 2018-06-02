@@ -44,23 +44,23 @@ final class JSONParser {
 
 extension JSONParser {
     
-    static func parse(_ data: Data, options: Option = []) throws -> JSONObject {
+    static func parse(_ data: Data, options: Option = []) throws -> JSON {
         return try data.withUnsafeBytes { pointer in
             return try parse(UnsafeBufferPointer(start: pointer, count: data.count), options: options)
         }
     }
     
-    static func parse(_ data: [UTF8.CodeUnit], options: Option = []) throws -> JSONObject {
+    static func parse(_ data: [UTF8.CodeUnit], options: Option = []) throws -> JSON {
         return try data.withUnsafeBufferPointer { buffer in
             return try parse(buffer, options: options)
         }
     }
     
-    static func parse(_ string: String, options: Option = []) throws -> JSONObject {
+    static func parse(_ string: String, options: Option = []) throws -> JSON {
         return try parse(Array(string.utf8), options: options)
     }
     
-    static func parse(_ buffer: UnsafeBufferPointer<UTF8.CodeUnit>, options: Option = []) throws -> JSONObject {
+    static func parse(_ buffer: UnsafeBufferPointer<UTF8.CodeUnit>, options: Option = []) throws -> JSON {
         let parser = try JSONParser(bufferPointers: buffer, options: options)
         
         do {
@@ -113,7 +113,7 @@ private extension JSONParser {
 
 private extension JSONParser {
     
-    func parseValue() throws -> JSONObject {
+    func parseValue() throws -> JSON {
         assert(!pointer.pointee.isWhiteSpace)
         
         defer { _ = try? skipWhitespace() }
@@ -150,7 +150,7 @@ private extension JSONParser {
         }
     }
     
-    func parseObject() throws -> JSONObject {
+    func parseObject() throws -> JSON {
         assert(peek() == objectOpen)
         pop()
         
@@ -161,7 +161,7 @@ private extension JSONParser {
             return .object([:])
         }
         
-        var tempDict: [String: JSONObject] = Dictionary.init(minimumCapacity: 6)
+        var tempDict: [String: JSON] = Dictionary.init(minimumCapacity: 6)
         var wasComma = false
         
         repeat {
@@ -205,7 +205,7 @@ private extension JSONParser {
         } while true
     }
     
-    func parseArray() throws -> JSONObject {
+    func parseArray() throws -> JSON {
         assert(peek() == arrayOpen)
         pop()
         
@@ -216,7 +216,7 @@ private extension JSONParser {
             return .array([])
         }
         
-        var tempArray: [JSONObject] = []
+        var tempArray: [JSON] = []
         tempArray.reserveCapacity(20)
         
         var wasComma = false
@@ -259,7 +259,7 @@ private extension JSONParser {
         } while true
     }
     
-    func parseNumber() throws -> JSONObject {
+    func parseNumber() throws -> JSON {
         assert(numbers ~= peek()! || minus == peek())
         
         var seenExponent = false // 有小数
@@ -351,7 +351,7 @@ private extension JSONParser {
         } while true
     }
     
-    func constructNumber(significand: UInt64, mantisa: UInt64?, exponent: UInt64?, divisor: Double, negative: Bool, negativeExponent: Bool) throws -> JSONObject {
+    func constructNumber(significand: UInt64, mantisa: UInt64?, exponent: UInt64?, divisor: Double, negative: Bool, negativeExponent: Bool) throws -> JSON {
         // 没有尾数或者没有指数
         if mantisa != nil || exponent != nil {
             let number = Double(negative ? -1 : 1) * (Double(significand) + Double(mantisa ?? 0) / divisor)

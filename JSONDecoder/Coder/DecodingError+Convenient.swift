@@ -8,7 +8,7 @@
 
 extension DecodingError {
 
-    static func _typeMismatch(at path: [CodingKey], expectation: Any.Type, reality: JSONObject) -> DecodingError {
+    static func _typeMismatch(at path: [CodingKey], expectation: Any.Type, reality: JSON) -> DecodingError {
         let context = DecodingError.Context(
             codingPath: path,
             debugDescription: "Expected to decode \(expectation) but found \(reality)) instead."

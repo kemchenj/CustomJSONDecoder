@@ -12,7 +12,7 @@ public final class CustomDecoder {
 
     public static func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable {
         
-        let rootObject: JSONObject
+        let rootObject: JSON
 
         do {
             rootObject = try JSONParser.parse(data)

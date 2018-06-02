@@ -14,11 +14,11 @@ final class _JSONDecoder: Decoder {
 
     var userInfo: [CodingUserInfoKey : Any]
 
-    var object: JSONObject
+    var object: JSON
 
-    var currentObject: JSONObject!
+    var currentObject: JSON!
 
-    init(referencing object: JSONObject, at codingPath: [CodingKey] = []) {
+    init(referencing object: JSON, at codingPath: [CodingKey] = []) {
         self.codingPath = codingPath
         self.object = object
         self.userInfo = [:]
@@ -36,11 +36,11 @@ extension _JSONDecoder {
         return try container(keyedBy: type, wrapping: currentObject ?? object)
     }
 
-    func container<Key>(keyedBy type: Key.Type, wrapping object: JSONObject) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+    func container<Key>(keyedBy type: Key.Type, wrapping object: JSON) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
         guard case let .object(unwrappedObject) = object else {
             throw DecodingError._typeMismatch(
                 at: codingPath,
-                expectation: [String: JSONObject].self,
+                expectation: [String: JSON].self,
                 reality: object
             )
         }
@@ -53,11 +53,11 @@ extension _JSONDecoder {
         return try unkeyedContainer(wrapping: currentObject ?? object)
     }
 
-    func unkeyedContainer(wrapping object: JSONObject) throws -> UnkeyedDecodingContainer {
+    func unkeyedContainer(wrapping object: JSON) throws -> UnkeyedDecodingContainer {
         guard case let .array(array) = object else {
             throw DecodingError._typeMismatch(
                 at: codingPath,
-                expectation: [String: JSONObject].self,
+                expectation: [String: JSON].self,
                 reality: object
             )
         }
@@ -92,14 +92,14 @@ extension _JSONDecoder {
 
 extension _JSONDecoder {
 
-    func unbox<T>(_ object: JSONObject, forKey key: CodingKey) throws -> T where T: BinaryFloatingPoint, T: LosslessStringConvertible {
+    func unbox<T>(_ object: JSON, forKey key: CodingKey) throws -> T where T: BinaryFloatingPoint, T: LosslessStringConvertible {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return try unbox(object)
     }
 
-    func unbox<T>(_ object: JSONObject) throws -> T where T: BinaryFloatingPoint, T: LosslessStringConvertible {
+    func unbox<T>(_ object: JSON) throws -> T where T: BinaryFloatingPoint, T: LosslessStringConvertible {
         switch object {
         case let .integer(number):
             guard let integer = T(exactly: number) else {
@@ -147,14 +147,14 @@ extension _JSONDecoder {
         }
     }
 
-    func unbox<T>(_ object: JSONObject, forKey key: CodingKey) throws -> T where T: FixedWidthInteger {
+    func unbox<T>(_ object: JSON, forKey key: CodingKey) throws -> T where T: FixedWidthInteger {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return try unbox(object)
     }
 
-    func unbox<T>(_ object: JSONObject) throws -> T where T: FixedWidthInteger {
+    func unbox<T>(_ object: JSON) throws -> T where T: FixedWidthInteger {
         switch object {
         case let .integer(number):
             guard let integer = T(exactly: number) else {
@@ -186,14 +186,14 @@ extension _JSONDecoder {
         }
     }
 
-    func unbox(_ object: JSONObject, forKey key: CodingKey) throws -> Bool {
+    func unbox(_ object: JSON, forKey key: CodingKey) throws -> Bool {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return try unbox(object)
     }
 
-    func unbox(_ object: JSONObject) throws -> Bool {
+    func unbox(_ object: JSON) throws -> Bool {
         func throwError() throws -> Never {
             throw DecodingError._typeMismatch(
                 at: codingPath,
@@ -225,14 +225,14 @@ extension _JSONDecoder {
         }
     }
 
-    func unbox(_ object: JSONObject, forKey key: CodingKey) throws -> String {
+    func unbox(_ object: JSON, forKey key: CodingKey) throws -> String {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return try unbox(object)
     }
 
-    func unbox(_ object: JSONObject) throws -> String {
+    func unbox(_ object: JSON) throws -> String {
         switch object {
         case .bool, .double, .integer, .string:
             return object.description
@@ -245,27 +245,27 @@ extension _JSONDecoder {
         }
     }
 
-    func unboxDecodable<T>(_ object: JSONObject, forKey key: CodingKey) throws -> T where T: Decodable {
+    func unboxDecodable<T>(_ object: JSON, forKey key: CodingKey) throws -> T where T: Decodable {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return try unboxDecodable(object)
     }
 
-    func unboxDecodable<T>(_ object: JSONObject) throws -> T where T: Decodable {
+    func unboxDecodable<T>(_ object: JSON) throws -> T where T: Decodable {
         currentObject = object
 
         return try T.init(from: self)
     }
 
-    func unboxNil(_ object: JSONObject, forKey key: CodingKey) -> Bool {
+    func unboxNil(_ object: JSON, forKey key: CodingKey) -> Bool {
         codingPath.append(key)
         defer { codingPath.removeLast() }
 
         return unboxNil(object)
     }
 
-    func unboxNil(_ object: JSONObject) -> Bool {
+    func unboxNil(_ object: JSON) -> Bool {
         return object == .null
     }
 }

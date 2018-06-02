@@ -12,29 +12,29 @@ final class _KeyedContainer<K: CodingKey>: KeyedDecodingContainerProtocol {
     
     private unowned let decoder: _JSONDecoder
     
-    private let object: [String: JSONObject]
+    private let rootObject: [String: JSON]
     
     var codingPath: [CodingKey] {
         get { return decoder.codingPath }
         set { decoder.codingPath = newValue }
     }
     
-    init(referencing decoder: _JSONDecoder, wrapping object: [String: JSONObject]) {
+    init(referencing decoder: _JSONDecoder, wrapping object: [String: JSON]) {
         self.decoder  = decoder
-        self.object  = object
+        self.rootObject  = object
     }
     
     var allKeys: [Key] {
-        return object.keys.compactMap(Key.init)
+        return rootObject.keys.compactMap(Key.init)
     }
     
     func contains(_ key: Key) -> Bool {
-        return object[key.stringValue] != nil
+        return rootObject[key.stringValue] != nil
     }
 
     @inline(__always)
-    private func getObject(forKey key: Key) throws -> JSONObject {
-        guard let object = object[key.stringValue] else {
+    private func getObject(forKey key: Key) throws -> JSON {
+        guard let object = rootObject[key.stringValue] else {
             let context = DecodingError.Context(
                 codingPath: codingPath,
                 debugDescription: "No value associated with key \(key) (\"\(key.stringValue)\")."
@@ -124,8 +124,8 @@ extension _KeyedContainer {
         defer { codingPath.removeLast() }
 
         let value = (key is JSONKey) == true
-            ? JSONObject.object(object)
-            : object[key.stringValue, default: .null]
+            ? JSON.object(rootObject)
+            : rootObject[key.stringValue, default: .null]
         return _JSONDecoder(referencing: value, at: decoder.codingPath)
     }
 
