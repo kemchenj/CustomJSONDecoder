@@ -62,26 +62,6 @@ extension _JSONDecoder {
 
         return _UnkeyedContainer(referencing: self, wrapping: array)
     }
-
-    func singleValueContainer() throws -> SingleValueDecodingContainer {
-        return _SingleValueDecodingContainer(referencing: self, wrapping: currentObject)
-    }
-
-    @inline(__always)
-    private func _superDecoder(forKey key: CodingKey) throws -> Decoder {
-        codingPath.append(key)
-        defer { codingPath.removeLast() }
-
-        return _JSONDecoder(referencing: currentObject ?? object, at: codingPath)
-    }
-
-    func superDecoder() throws -> Decoder {
-        return try _superDecoder(forKey: JSONKey.super)
-    }
-
-    func superDecoder(forKey key: CodingKey) throws -> Decoder {
-        return try _superDecoder(forKey: key)
-    }
 }
 
 //
